@@ -186,7 +186,6 @@ class PyTorchDeep(Explainer):
                                    (self.data[l].shape[0],) + tuple([1 for k in range(len(X[l].shape) - 1)])) for l
                            in range(len(X))]
                 joint_x = [torch.cat((tiled_X[l], self.data[l]), dim=0) for l in range(len(X))]
-                print(joint_x)
                 # run attribution computation graph
                 feature_ind = model_output_ranks[j, i]
                 sample_phis = self.gradient(feature_ind, joint_x)
