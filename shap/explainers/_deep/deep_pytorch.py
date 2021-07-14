@@ -37,7 +37,7 @@ class PyTorchDeep(Explainer):
             # if we are taking an interim layer, the 'data' is going to be the input
             # of the interim layer; we will capture this using a forward hook
             with torch.no_grad():
-                _ = model(*data)
+                _ = model(data)
                 interim_inputs = self.layer.target_input
                 if type(interim_inputs) is tuple:
                     # this should always be true, but just to be safe
@@ -52,11 +52,11 @@ class PyTorchDeep(Explainer):
         self.num_outputs = 1
         with torch.no_grad():
             if mod==1:
-                outputs = model(**data)[0]          
+                outputs = model(data)[0]          
             elif mod==-1:
-                outputs = model(**data)[1]
+                outputs = model(data)[1]
             else:
-                outputs = model(**data)
+                outputs = model(data)
             
             
             # also get the device everything is running on
