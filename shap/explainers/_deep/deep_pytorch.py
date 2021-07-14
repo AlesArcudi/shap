@@ -107,7 +107,7 @@ class PyTorchDeep(Explainer):
         print(inputs[0])
         self.model.zero_grad()
         X = [x.requires_grad_() for x in inputs]
-        outputs = self.model(*X)
+        outputs = self.model(X)
         selected = [val for val in outputs[:, idx]]
         grads = []
         if self.interim:
@@ -151,7 +151,7 @@ class PyTorchDeep(Explainer):
 
         if ranked_outputs is not None and self.multi_output:
             with torch.no_grad():
-                model_output_values = self.model(*X)
+                model_output_values = self.model(X)
             # rank and determine the model outputs that we will explain
             if output_rank_order == "max":
                 _, model_output_ranks = torch.sort(model_output_values, descending=True)
