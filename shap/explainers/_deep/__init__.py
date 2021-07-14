@@ -83,7 +83,7 @@ class Deep(Explainer):
         if framework == 'tensorflow':
             self.explainer = TFDeep(model, data, session, learning_phase_flags)
         elif framework == 'pytorch':
-            self.explainer = PyTorchDeep(model, data)
+            self.explainer = PyTorchDeep(model, data, mod=1)
 
         self.expected_value = self.explainer.expected_value
 
