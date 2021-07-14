@@ -56,7 +56,7 @@ class PyTorchDeep(Explainer):
             elif mod==-1:
                 outputs = model(*data)[1]
             else:
-                outputs = model(data)
+                outputs = model(*data)
             
             
             # also get the device everything is running on
@@ -105,9 +105,8 @@ class PyTorchDeep(Explainer):
 
     def gradient(self, idx, inputs):
         self.model.zero_grad()
-        X = [x.requires_grad_() for x in inputs]
-        print(X)
-        outputs = self.model(*X)
+        X = [x.requires_grad_() for x in inputs]        
+        outputs = self.model(*[x.int() for x in X])
         selected = [val for val in outputs[:, idx]]
         grads = []
         if self.interim:
