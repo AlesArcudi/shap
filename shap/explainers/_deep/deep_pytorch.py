@@ -107,7 +107,7 @@ class PyTorchDeep(Explainer):
         self.model.zero_grad()
         X = [x.requires_grad_() for x in inputs]
         print(X)
-        outputs = self.model(X)
+        outputs = self.model(*X)
         selected = [val for val in outputs[:, idx]]
         grads = []
         if self.interim:
@@ -141,17 +141,17 @@ class PyTorchDeep(Explainer):
         # X_data ~ self.data
 
         # check if we have multiple inputs
-        #if not self.multi_input:
-        #    assert type(X) != list, "Expected a single tensor model input!"
-        #    X = [X]
-        #else:
-        #    assert type(X) == list, "Expected a list of model inputs!"
+        if not self.multi_input:
+            assert type(X) != list, "Expected a single tensor model input!"
+            X = [X]
+        else:
+            assert type(X) == list, "Expected a list of model inputs!"
 
-        #X = [x.detach().to(self.device) for x in X]
+        X = [x.detach().to(self.device) for x in X]
 
         if ranked_outputs is not None and self.multi_output:
             with torch.no_grad():
-                model_output_values = self.model(X)
+                model_output_values = self.model(*X)
             # rank and determine the model outputs that we will explain
             if output_rank_order == "max":
                 _, model_output_ranks = torch.sort(model_output_values, descending=True)
