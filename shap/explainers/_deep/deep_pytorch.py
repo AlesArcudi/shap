@@ -7,7 +7,7 @@ torch = None
 
 class PyTorchDeep(Explainer):
 
-    def __init__(self, model, data):
+    def __init__(self, model, data, mod=0):
         # try and import pytorch
         global torch
         if torch is None:
@@ -19,8 +19,8 @@ class PyTorchDeep(Explainer):
         self.multi_input = False
         if type(data) == list:
             self.multi_input = True
-        if type(data) != list:
-            data = [data]
+#        if type(data) != list:
+#            data = [data]
         self.data = data
         self.layer = None
         self.input_handle = None
@@ -51,14 +51,20 @@ class PyTorchDeep(Explainer):
         self.multi_output = False
         self.num_outputs = 1
         with torch.no_grad():
-            outputs = model(*data)
-
+            if mod==1:
+                outputs = model(**data)[0]          
+            elif mod==-1:
+                outputs = model(**data)[1]
+            else:
+                outputs = model(**data)
+            
+            
             # also get the device everything is running on
             self.device = outputs.device
             if outputs.shape[1] > 1:
                 self.multi_output = True
                 self.num_outputs = outputs.shape[1]
-            self.expected_value = outputs.mean(0).cpu().numpy()
+            self.expected_value = outputs.mean(0).detach().cpu().numpy()
 
     def add_target_handle(self, layer):
         input_handle = layer.register_forward_hook(get_target_input)
@@ -98,6 +104,7 @@ class PyTorchDeep(Explainer):
                     pass
 
     def gradient(self, idx, inputs):
+        print(inputs[0])
         self.model.zero_grad()
         X = [x.requires_grad_() for x in inputs]
         outputs = self.model(*X)
@@ -180,6 +187,7 @@ class PyTorchDeep(Explainer):
                                    (self.data[l].shape[0],) + tuple([1 for k in range(len(X[l].shape) - 1)])) for l
                            in range(len(X))]
                 joint_x = [torch.cat((tiled_X[l], self.data[l]), dim=0) for l in range(len(X))]
+                print(joint_x)
                 # run attribution computation graph
                 feature_ind = model_output_ranks[j, i]
                 sample_phis = self.gradient(feature_ind, joint_x)
@@ -195,7 +203,7 @@ class PyTorchDeep(Explainer):
                         phis[l][j] = (sample_phis[l][self.data[l].shape[0]:] * (x[l] - data[l])).mean(0)
                 else:
                     for l in range(len(X)):
-                        phis[l][j] = (torch.from_numpy(sample_phis[l][self.data[l].shape[0]:]).to(self.device) * (X[l][j: j + 1] - self.data[l])).cpu().detach().numpy().mean(0)
+                        phis[l][j] = (torch.from_numpy(sample_phis[l][self.data[l].shape[0]:]).to(self.device) * (X[l][j: j + 1] - self.data[l])).cpu().numpy().mean(0)
             output_phis.append(phis[0] if not self.multi_input else phis)
         # cleanup; remove all gradient handles
         for handle in handles:
@@ -395,3 +403,5 @@ op_handler['Softmax'] = nonlinear_1d
 op_handler['MaxPool1d'] = maxpool
 op_handler['MaxPool2d'] = maxpool
 op_handler['MaxPool3d'] = maxpool
+
+
