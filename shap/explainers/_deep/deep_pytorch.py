@@ -104,9 +104,9 @@ class PyTorchDeep(Explainer):
                     pass
 
     def gradient(self, idx, inputs):
-        print(inputs[0])
         self.model.zero_grad()
         X = [x.requires_grad_() for x in inputs]
+        print(X)
         outputs = self.model(X)
         selected = [val for val in outputs[:, idx]]
         grads = []
