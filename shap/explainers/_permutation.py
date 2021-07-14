@@ -151,5 +151,5 @@ class Permutation(Explainer):
             of such matrices, one for each output.
         """
 
-        explanation = self(X, max_evals=npermutations * X[0].shape[1], main_effects=main_effects)
+        explanation = self(X, max_evals=npermutations * X.shape[1], main_effects=main_effects)
         return explanation._old_format()
