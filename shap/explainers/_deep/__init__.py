@@ -19,7 +19,7 @@ class Deep(Explainer):
     See :ref:`Deep Explainer Examples <deep_explainer_examples>`
     """
 
-    def __init__(self, model, data, session=None, learning_phase_flags=None):
+    def __init__(self, model, data,mod, session=None, learning_phase_flags=None):
         """ An explainer object for a differentiable model using a given background dataset.
 
         Note that the complexity of the method scales linearly with the number of background data
@@ -83,7 +83,7 @@ class Deep(Explainer):
         if framework == 'tensorflow':
             self.explainer = TFDeep(model, data, session, learning_phase_flags)
         elif framework == 'pytorch':
-            self.explainer = PyTorchDeep(model, data, mod=1)
+            self.explainer = PyTorchDeep(model, data,mod)
 
         self.expected_value = self.explainer.expected_value
 
