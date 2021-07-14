@@ -141,13 +141,13 @@ class PyTorchDeep(Explainer):
         # X_data ~ self.data
 
         # check if we have multiple inputs
-        if not self.multi_input:
-            assert type(X) != list, "Expected a single tensor model input!"
-            X = [X]
-        else:
-            assert type(X) == list, "Expected a list of model inputs!"
+        #if not self.multi_input:
+        #    assert type(X) != list, "Expected a single tensor model input!"
+        #    X = [X]
+        #else:
+        #    assert type(X) == list, "Expected a list of model inputs!"
 
-        X = [x.detach().to(self.device) for x in X]
+        #X = [x.detach().to(self.device) for x in X]
 
         if ranked_outputs is not None and self.multi_output:
             with torch.no_grad():
