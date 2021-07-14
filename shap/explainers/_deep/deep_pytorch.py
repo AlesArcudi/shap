@@ -7,7 +7,7 @@ torch = None
 
 class PyTorchDeep(Explainer):
 
-    def __init__(self, model, data, mod=0):
+    def __init__(self, model, data, mod):
         # try and import pytorch
         global torch
         if torch is None:
